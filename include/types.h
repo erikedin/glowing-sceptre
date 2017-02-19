@@ -1,5 +1,3 @@
 #pragma once
 
-#include <vector>
-
-using bytevector = std::vector<unsigned char>;
+#include "bytevector.h"
