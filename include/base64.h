@@ -13,4 +13,5 @@ public:
 
     virtual std::string encode(const bytevector &v) const;
 };
+
 }

@@ -17,15 +17,15 @@ static const std::array<std::string, 4> INVALID_HEX_INPUT = {
     "0z",
 };
 
-static const std::array<std::pair<std::string, bytevector>, 7> HEX_DECODING = {{
-    {"",        bytevector { }},
-    {"00",      bytevector { 0x00 }},
-    {"0011",    bytevector { 0x00, 0x11 }},
-    {"001122",  bytevector { 0x00, 0x11, 0x22 }},
-    {"00AB",    bytevector { 0x00, 0xAB }},
-    {"00ab",    bytevector { 0x00, 0xAB }},
-    {"00abCd",  bytevector { 0x00, 0xAB, 0xCD }}
-}};
+static const std::array<std::pair<std::string, bytevector>, 7> HEX_DECODING = {
+    std::pair<std::string, bytevector> {"",        { }},
+    {"00",      { 0x00 }},
+    {"0011",    { 0x00, 0x11 }},
+    {"001122",  { 0x00, 0x11, 0x22 }},
+    {"00AB",    { 0x00, 0xAB }},
+    {"00ab",    { 0x00, 0xAB }},
+    {"00abCd",  { 0x00, 0xAB, 0xCD }}
+};
 
 TEST(HexDecoderTest, InvalidArguments)
 {

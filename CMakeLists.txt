@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 2.6)
 project (GlowingSceptre)
 
- add_compile_options(-std=c++11)
+ add_compile_options(-std=c++14)
 
 add_subdirectory(./googletest-release-1.8.0/googlemock
                  ${CMAKE_BINARY_DIR}/googletest-build)
