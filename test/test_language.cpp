@@ -43,5 +43,6 @@ TEST(Language, Scoring_EncryptedWithXor_OriginalIsBest) {
         [textLength,&originalBytes](unsigned char c) { return xor_array(originalBytes, bytevector(textLength, c)); });
 
     // Expect the first, with zero key, to be the best score.
-    EXPECT_EQ(encryptedTexts.begin(), findBestLanguageMatch(encryptedTexts.begin(), encryptedTexts.end(), englishLanguage()));
+    //EXPECT_EQ(encryptedTexts.begin(), findBestLanguageMatch(encryptedTexts.begin(), encryptedTexts.end(), englishLanguage()));
+    ASSERT_TRUE(false);
 }

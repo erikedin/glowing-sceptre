@@ -8,3 +8,7 @@
 #include "primitive.h"
 
 using namespace gs;
+
+Language gs::englishLanguage() {
+    return Language();
+}

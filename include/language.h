@@ -4,10 +4,7 @@
 #include <functional>
 #include <algorithm>
 
-namespace
-{
-
-}
+#include "bytevector.h"
 
 namespace gs
 {
@@ -25,5 +22,6 @@ T findBestLanguageMatch(T begin, T end, const Language &language)
 {
     auto scorer = [&language](auto s) { return languageMatchScore(s, language); };
     // TODO: Return the iterator with the minimum score.
+    return begin;
 }
 }
