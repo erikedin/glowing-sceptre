@@ -1,5 +1,7 @@
 #include "gtest/gtest.h"
 #include "language.h"
+#include "bytevector.h"
+#include "primitive.h"
 
 #include <vector>
 #include <iterator>
@@ -7,21 +9,18 @@
 
 using namespace gs;
 
-std::string bitError(const std::string &s, int bit)
-{
-  std::string result;
-  result.resize(s.size());
+struct IndexSequence {
+    char operator()() { return current++; }
+    char current = 0;
+};
 
-  std::transform(s.begin(), s.end(), result.begin(),
-    [bit](const char c){ return c ^ (1 << bit); });
-
-  return result;
+bytevector stringToBytes(const std::string &s) {
+    return bytevector(s.begin(), s.end());
 }
 
-// Each single bit error introduced into an english text will cause its
-// language score to be worse.
-TEST(Language, Scoring_SingleBitManipulation_OriginalIsBest) {
-    std::string englishText = R"(
+// The english text, XOR encrypted with any non-zero key will cause its language score to be worse.
+TEST(Language, Scoring_EncryptedWithXor_OriginalIsBest) {
+    std::string originalText = R"(
       Hereupon Legrand arose, with a grave and stately air, and brought me the beetle
       from a glass case in which it was enclosed. It was a beautiful scarabaeus, and, at
       that time, unknown to naturalistsof course a great prize in a scientific point
@@ -30,25 +29,19 @@ TEST(Language, Scoring_SingleBitManipulation_OriginalIsBest) {
       appearance of burnished gold. The weight of the insect was very remarkable, and,
       taking all things into consideration, I could hardly blame Jupiter for his opinion
       respecting it.
-  )";
+    )";
+    auto originalBytes = stringToBytes(originalText);
 
-    std::vector<std::string> stringsWithBitFlips;
-    std::array<int, 8> bits = { 0, 1, 2, 3, 4, 5, 6, 7 };
-    stringsWithBitFlips.resize(bits.size());
+    // Generate all keys.
+    std::size_t textLength = originalText.size();
+    bytevector keys(256);
+    std::generate(std::begin(keys), std::end(keys), IndexSequence());
 
-    std::transform(bits.cbegin(), bits.cend(), stringsWithBitFlips.begin(),
-      [&](int shift) { return bitError(englishText, shift); });
+    // Encrypt all texts.
+    std::vector<bytevector> encryptedTexts;
+    std::transform(keys.begin(), keys.end(), std::back_inserter(encryptedTexts),
+        [textLength,&originalBytes](unsigned char c) { return xor_array(originalBytes, bytevector(textLength, c)); });
 
-    // Introduce the actual english text as the last element.
-    auto expected = stringsWithBitFlips.insert(stringsWithBitFlips.end(), englishText);
-
-    auto english = englishLanguage();
-    auto actual = findBestLanguageMatch(stringsWithBitFlips.cbegin(), stringsWithBitFlips.cend(), english);
-
-    EXPECT_EQ(expected, actual);
-}
-
-TEST(Language, Scoring_NotEnoughCharacters_MaxSizeT) {
-    std::string shortText = "abcdef";
-    EXPECT_EQ(std::numeric_limits<std::size_t>::max(), languageMatchScore(shortText, englishLanguage()));
+    // Expect the first, with zero key, to be the best score.
+    EXPECT_EQ(encryptedTexts.begin(), findBestLanguageMatch(encryptedTexts.begin(), encryptedTexts.end(), englishLanguage()));
 }
